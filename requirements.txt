@@ -1,0 +1,5 @@
+psycopg2-binary
+pyarrow
+pandas
+findspark
+python-dotenv
