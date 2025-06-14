@@ -3,3 +3,4 @@ pyarrow
 pandas
 findspark
 python-dotenv
+requests
