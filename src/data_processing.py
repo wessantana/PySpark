@@ -7,7 +7,7 @@ spark = SparkSession.builder.appName("AppSpark").config("spark.driver.host", "lo
     .config("spark.driver.bindAddress", "127.0.0.1") \
     .config("spark.ui.showConsoleProgress", "false") \
     .config("spark.driver.memory", "4g") \
-    .config("spark.executor.memory", "4g") \
+    .config("spark.executor.memory", "8g") \
     .config("spark.memory.offHeap.enabled", "true",) \
     .config("spark.memory.offHeap.size", "2g") \
     .getOrCreate()
@@ -65,13 +65,12 @@ def padronizar_dataframe():
 
 
 def salvar_dataframe(dataframes:list, caminho_para_salvar:str="data/processed/"):
-    
-    # O problema de OutOffMemory foi solucionado aumentando a memória, mas não é uma solução definitiva.
+
 
     lista_dataframes = dataframes
     index_nome_arquivo = 1
     for dataframe in lista_dataframes:
-        dataframe.write.mode("overwrite").option("header", True).parquet(f"{caminho_para_salvar}processed{index_nome_arquivo}")
+        dataframe.repartition(100).write.mode("overwrite").option("header", True).parquet(f"{caminho_para_salvar}processed{index_nome_arquivo}")
         index_nome_arquivo += 1
 
 
