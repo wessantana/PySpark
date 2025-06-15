@@ -6,7 +6,12 @@ import os
 spark = SparkSession.builder.appName("AppSpark").config("spark.driver.host", "localhost") \
     .config("spark.driver.bindAddress", "127.0.0.1") \
     .config("spark.ui.showConsoleProgress", "false") \
+    .config("spark.driver.memory", "4g") \
+    .config("spark.executor.memory", "4g") \
+    .config("spark.memory.offHeap.enabled", "true",) \
+    .config("spark.memory.offHeap.size", "2g") \
     .getOrCreate()
+
     
 spark.sparkContext.setLogLevel("ERROR")
 
@@ -60,8 +65,9 @@ def padronizar_dataframe():
 
 
 def salvar_dataframe(dataframes:list, caminho_para_salvar:str="data/processed/"):
+    
+    # O problema de OutOffMemory foi solucionado aumentando a memória, mas não é uma solução definitiva.
 
-    #se eu me agarrar na ideia de LIFO talvez consiga nomear os arquivos com base no ano sem problemas. Só fazer o count de novo kkkk
     lista_dataframes = dataframes
     index_nome_arquivo = 1
     for dataframe in lista_dataframes:
