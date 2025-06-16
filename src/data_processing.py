@@ -68,10 +68,8 @@ def salvar_dataframe(dataframes:list, caminho_para_salvar:str="data/processed/")
 
 
     lista_dataframes = dataframes
-    index_nome_arquivo = 1
     for dataframe in lista_dataframes:
-        dataframe.repartition(100).write.mode("overwrite").option("header", True).parquet(f"{caminho_para_salvar}processed{index_nome_arquivo}")
-        index_nome_arquivo += 1
+        dataframe.repartition(100).write.mode("overwrite").option("header", True).parquet(caminho_para_salvar)
 
 
 try:
