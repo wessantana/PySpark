@@ -8,6 +8,8 @@ from pyspark.ml.evaluation import BinaryClassificationEvaluator
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 import numpy as np
+from dotenv import load_dotenv
+import os
 
 def precision_at_k(y_true, y_scores, k):
     top_k = np.argsort(y_scores)[-k:]
@@ -82,6 +84,16 @@ def main():
        .orderBy("risco_medio", ascending=False) \
         .limit(50)
     
+    top50_dataframe.write \
+    .format("jdbc") \
+    .option("url", os.getenv("DB_URL")) \
+    .option("dbtable", "acidentes_preditos") \
+    .option("user", os.getenv("DB_USER")) \
+    .option("password", os.getenv("DB_PASSWORD")) \
+    .option("driver", "org.postgresql.Driver") \
+    .mode("overwrite") \
+    .save()
+    
     top50_pandas = top50_dataframe.toPandas()
 
     pdf_path = "/app/data/reports/top_50_trechos.pdf"
@@ -104,6 +116,8 @@ def main():
     c.save()
 
     print("Relatório salvo com sucesso.")
+
+    
 
     spark.stop()
 
