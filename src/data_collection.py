@@ -3,7 +3,7 @@ import zipfile
 import io
 import os
 
-url = "https://download1588.mediafire.com/rlk25ccdj5gg47a3EhcUzyoPWB7UbcoWq3vShnc98EugNVQeXzsJvthCEnU1AOAM5EAviJVUAtUHDwMouZEGurtumkl4wO47d9MNIPEnF5nxLgHlNQgnK83DdhJMNL-th3kEB20yDP0CgEc2CM4APor35ZDOh0vUFsE5v5Tzu6Q/nt4ppp6zrjtsv1l/csvs.zip"
+url = "https://uesli.blob.core.windows.net/uesli/csvs.zip"
 
 def download_and_unzip(url, extract_to="."):
     response = requests.get(url)
