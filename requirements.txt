@@ -1,13 +1,9 @@
-psycopg2-binary
-pyarrow
-pandas
-findspark
-python-dotenv
 requests
 reportlab
 pyspark
 numpy
 streamlit
-matplotlib.pyplot
+matplotlib
 seaborn
 scikit-learn
+python-dotenv

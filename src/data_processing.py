@@ -1,6 +1,7 @@
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, trim, when, regexp_replace, to_date, to_timestamp, lit
 from pyspark.sql.types import IntegerType, DoubleType
+from dotenv import load_dotenv
 import os
 
 spark = SparkSession.builder.appName("AppSpark").config("spark.driver.host", "localhost") \
@@ -97,11 +98,33 @@ def salvar_dataframe(dataframes:list, caminho_para_salvar:str="data/processed/")
     except Exception as e:
         print(f"Não foi possível salvar o dataframe: {e}")
 
+def salvar_dataframe_no_banco(dataframes:list):
+    load_dotenv()
+
+    jdbc_url = os.getenv("DB_URL")
+    user = os.getenv("DB_USER")
+    password = os.getenv("DB_PASSWORD")
+    properties = {
+        "user":user,
+        "password": password,
+        "driver": "org.postgresql.Driver"
+    }
+
+    try:
+        for i, dataframe in enumerate(dataframes, 1):
+            nome_tabela = f"acidentes_processados_{i}"
+            dataframe.write \
+                .jdbc(url=jdbc_url, table=nome_tabela, mode="overwrite", properties=properties)
+            print(f"DataFrame salvo com sucesso em {nome_tabela}")
+    except Exception as e:
+        print(f"Erro ao salvar DataFrame no banco: {e}")
+    return
 
 try:
 
     dataframes_padronizados = padronizar_dataframe()
     salvar_dataframe(dataframes_padronizados, "data/processed/")
+    salvar_dataframe_no_banco(dataframes_padronizados)
 
 except Exception as e:
     print(f"Não foi possível processar os dados: {e}")
