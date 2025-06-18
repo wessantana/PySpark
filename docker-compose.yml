@@ -13,7 +13,39 @@ services:
     ports:
       - "4040:4040"
     command: >
-      spark-submit
-      --driver-class-path /opt/bitnami/spark/jars/postgresql-42.5.4.jar
+      bash -c "
+      echo 'Iniciando pipeline Spark...';
+      spark-submit --driver-class-path /opt/bitnami/spark/jars/postgresql-42.5.4.jar
       --jars /opt/bitnami/spark/jars/postgresql-42.5.4.jar
-      src/ml_pipeline.py
+      /app/src/data_collection.py &&
+      spark-submit --driver-class-path /opt/bitnami/spark/jars/postgresql-42.5.4.jar
+      --jars /opt/bitnami/spark/jars/postgresql-42.5.4.jar
+      /app/src/data_processing.py &&
+      spark-submit --driver-class-path /opt/bitnami/spark/jars/postgresql-42.5.4.jar
+      --jars /opt/bitnami/spark/jars/postgresql-42.5.4.jar
+      /app/src/ml_pipeline.py
+      "
+  dashboard:
+    image: python:3.11
+    container_name: streamlit-app
+    environment:
+    - DB_URL=${DB_URL}
+    - DB_USER=${DB_USER}
+    - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+    - spark
+    working_dir: /app
+    volumes:
+    - ./src:/app/src
+    - ./data:/app/data
+    - ./dashboard-requirements.txt:/app/requirements.txt:ro
+    - ./.env:/app/.env:ro
+    ports:
+    - "8501:8501"
+    command: >
+      bash -c "
+      apt-get update && apt-get install -y libpq-dev &&
+      pip install --upgrade pip &&
+      pip install --no-cache-dir -r /app/requirements.txt &&
+      streamlit run /app/src/dashboard.py --server.port=8501 --server.headless=true
+      "

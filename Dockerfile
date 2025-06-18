@@ -9,7 +9,6 @@ RUN apt-get update && \
     libpq-dev \
     gcc \
     python3-dev \
-    openjdk-17-jdk \
     netcat-openbsd && \
     rm -rf /var/lib/apt/lists/*
 
