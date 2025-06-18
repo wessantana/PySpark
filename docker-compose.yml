@@ -1,31 +1,11 @@
 services:
-  postgres:
-    image: postgres:15
-    container_name: acidentes-postgres
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5432:5432"
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   spark:
     build: .
     container_name: spark-app
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
-      - DB_URL=jdbc:postgresql://postgres:5432/acidentes_db
-      - DB_USER=spark_user
-      - DB_PASSWORD=spark_password
+      - DB_URL=${DB_URL}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     volumes:
       - ./data:/app/data
       - ./src:/app/src
@@ -33,10 +13,7 @@ services:
     ports:
       - "4040:4040"
     command: >
-      bash -c "while ! nc -z postgres 5432; do sleep 1; done;
-      spark-submit --driver-class-path /opt/bitnami/spark/jars/postgresql-42.5.4.jar
+      spark-submit
+      --driver-class-path /opt/bitnami/spark/jars/postgresql-42.5.4.jar
       --jars /opt/bitnami/spark/jars/postgresql-42.5.4.jar
-      src/data_collection.py"
-
-volumes:
-  pg_data:
+      src/ml_pipeline.py

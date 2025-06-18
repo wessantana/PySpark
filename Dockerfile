@@ -23,18 +23,11 @@ RUN curl -o ${SPARK_EXTRA_JAR_PATH}/postgresql-${POSTGRES_JDBC_VERSION}.jar \
     https://jdbc.postgresql.org/download/postgresql-${POSTGRES_JDBC_VERSION}.jar
 
 WORKDIR /app
-
 COPY requirements.txt .
 COPY . .
 
 # 4. Instalação de dependências Python
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install psycopg2-binary
+    pip install --no-cache-dir -r requirements.txt
 
 RUN chmod +x /app/src/*.py
-
-# 5. Comando de execução corrigido (substituindo a variável pelo valor real)
-CMD ["spark-submit", "--driver-class-path", "/opt/bitnami/spark/jars/postgresql-42.5.4.jar", \
-     "--jars", "/opt/bitnami/spark/jars/postgresql-42.5.4.jar", \
-     "src/data_collection.py"]
