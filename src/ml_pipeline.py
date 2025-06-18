@@ -18,6 +18,7 @@ def precision_at_k(y_true, y_scores, k):
 def main():
 
     spark = SparkSession.builder.appName("AcidentesMLPipeline").getOrCreate()
+    spark.sparkContext.setLogLevel("WARN")
     dataframe = spark.read.parquet("data/processed/processed*")
 
     dataframe = dataframe.withColumn("hora", hour("horario"))
