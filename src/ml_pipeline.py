@@ -11,13 +11,21 @@ import numpy as np
 from dotenv import load_dotenv
 import os
 
+load_dotenv()
+
 def precision_at_k(y_true, y_scores, k):
     top_k = np.argsort(y_scores)[-k:]
     return np.mean(y_true[top_k])
 
 def main():
 
-    spark = SparkSession.builder.appName("AcidentesMLPipeline").getOrCreate()
+    spark = SparkSession.builder \
+    .appName("AcidentesMLPipeline") \
+    .config("spark.driver.memory", "8g") \
+    .getOrCreate()
+
+    spark.sparkContext.setLogLevel("WARN")
+    
     dataframe = spark.read.parquet("data/processed/processed*")
 
     dataframe = dataframe.withColumn("hora", hour("horario"))
@@ -70,7 +78,7 @@ def main():
     auc = evaluator.evaluate(pred)
     print(f"AUC-ROC: {auc:.4f}")
 
-    pandas_pred = pred.select("label", "probability").toPandas()
+    pandas_pred = pred.select("label", "probability").limit(10000).toPandas()
     pandas_pred["score"] = pandas_pred["probability"].apply(lambda v: float(v[1]))
     y_true = pandas_pred["label"].values
     y_scores = pandas_pred["score"].values
