@@ -4,3 +4,6 @@ pandas
 findspark
 python-dotenv
 requests
+reportlab
+pyspark
+numpy
