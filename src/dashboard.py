@@ -288,8 +288,15 @@ if df.empty:
 
 col1, col2, col3 = st.columns(3)
 with col1:
-    municipios = df["municipio"].dropna().unique()
-    municipio_sel = st.multiselect("Município", municipios, default=list(municipios)[:5])
+    municipios = df["municipio"].dropna().unique().tolist()
+    all_label = "Todos"
+    options_mun = [all_label] + municipios
+    selected_municipios = st.multiselect("Município", options_mun, default=[all_label])
+
+    if all_label in selected_municipios:
+        municipio_sel = municipios
+    else:
+        municipio_sel = selected_municipios
 with col2:
     anos = pd.to_datetime(df["data_inversa"]).dt.year.unique()
     ano_sel = st.multiselect("Ano", sorted(anos), default=list(anos))
