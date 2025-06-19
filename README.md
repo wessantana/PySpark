@@ -45,7 +45,6 @@ Projeto de pipeline de dados com PySpark, Machine Learning (MLlib), e visualiza√
    Isso iniciar√°:
 
    * Spark (driver e executor)
-   * PostgreSQL
    * Streamlit (interface em [http://localhost:8501](http://localhost:8501))
 
 4. Acesse a interface:
